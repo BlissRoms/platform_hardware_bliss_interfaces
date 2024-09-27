@@ -1,6 +1,5 @@
 //
-// Copyright (C) 2017 The Android Open Source Project
-// Copyright (C) 2017,2020 The LineageOS Project
+// Copyright (C) 2020 The Android Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,19 +12,24 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-cc_binary {
-    name: "android.hardware.biometrics.fingerprint@2.0-service",
-    defaults: ["hidl_defaults"],
-    relative_install_path: "hw",
-    init_rc: ["android.hardware.biometrics.fingerprint@2.0-service.rc"],
-    vintf_fragments: ["android.hardware.biometrics.fingerprint@2.0-service.xml"],
-    srcs: ["service.cpp", "BiometricsFingerprint.cpp"],
-    shared_libs: [
-        "libutils",
-        "liblog",
-        "libhidlbase",
-        "libhardware",
-        "android.hardware.biometrics.fingerprint@2.1",
+
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+cc_library {
+    name: "android.hardware.fastboot@1.1-impl.custom",
+    recovery: true,
+    srcs: [
+        "Fastboot.cpp",
     ],
-    proprietary: true,
+    relative_install_path: "hw",
+    shared_libs: [
+        "libbase",
+        "libhidlbase",
+        "libutils",
+        "libcutils",
+        "android.hardware.fastboot@1.0",
+        "android.hardware.fastboot@1.1",
+    ],
 }
