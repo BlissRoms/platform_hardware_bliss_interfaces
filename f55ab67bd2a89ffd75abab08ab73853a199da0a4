@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a17a6fbb_60c4f57b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000142
+      },
+      "writtenOn": "2025-02-10T06:19:40Z",
+      "side": 1,
+      "message": "Will test on ROG Phone II and ROG Phone 3 that we do have on roster then only will merge",
+      "revId": "f55ab67bd2a89ffd75abab08ab73853a199da0a4",
+      "serverId": "b7386340-edb3-408c-9cac-98e148952b30"
+    }
+  ]
+}
