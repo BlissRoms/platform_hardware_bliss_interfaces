@@ -90,7 +90,7 @@ ChargingControl::ChargingControl()
 
 #ifdef HEALTH_CHARGING_CONTROL_SUPPORTS_DEADLINE
 #ifdef HEALTH_CHARGING_CONTROL_DEADLINE_PATH
-    mChargingEnabledNode = &kChargingDeadlineNodes[0];
+    mChargingDeadlineNode = &kChargingDeadlineNodes[0];
 #else
     while (!mChargingDeadlineNode) {
         for (const auto& node : kChargingDeadlineNodes) {

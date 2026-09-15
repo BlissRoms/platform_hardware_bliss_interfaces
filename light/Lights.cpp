@@ -35,6 +35,8 @@ Lights::Lights() {
         mLights.push_back(AutoHwLight(LightType::BATTERY));
         mLights.push_back(AutoHwLight(LightType::NOTIFICATIONS));
         mLights.push_back(AutoHwLight(LightType::ATTENTION));
+        mLights.push_back(AutoHwLight(LightType::MICROPHONE));
+        mLights.push_back(AutoHwLight(LightType::CAMERA));
     }
 }
 
@@ -44,24 +46,56 @@ ndk::ScopedAStatus Lights::setLightState(int32_t id, const HwLightState& hwLight
     LightType type = static_cast<LightType>(id);
     switch (type) {
         case LightType::BACKLIGHT:
-            mDevices.setBacklightState(state);
+            if (mDevices.hasBacklightDevices()) {
+                mDevices.setBacklightState(state);
+            } else {
+                return ndk::ScopedAStatus::fromExceptionCode(EX_UNSUPPORTED_OPERATION);
+            }
             break;
         case LightType::KEYBOARD:
-            mDevices.setKeyboardState(state);
+            if (mDevices.hasKeyboardDevices()) {
+                mDevices.setKeyboardState(state);
+            } else {
+                return ndk::ScopedAStatus::fromExceptionCode(EX_UNSUPPORTED_OPERATION);
+            }
             break;
         case LightType::BUTTONS:
-            mDevices.setButtonsState(state);
+            if (mDevices.hasButtonDevices()) {
+                mDevices.setButtonsState(state);
+            } else {
+                return ndk::ScopedAStatus::fromExceptionCode(EX_UNSUPPORTED_OPERATION);
+            }
             break;
         case LightType::BATTERY:
-            mLastBatteryState = state;
-            updateNotificationColor();
+            if (mDevices.hasNotificationDevices()) {
+                mLastBatteryState = state;
+                updateNotificationColor();
+            } else {
+                return ndk::ScopedAStatus::fromExceptionCode(EX_UNSUPPORTED_OPERATION);
+            }
             break;
         case LightType::NOTIFICATIONS:
-            mLastNotificationsState = state;
-            updateNotificationColor();
+            if (mDevices.hasNotificationDevices()) {
+                mLastNotificationsState = state;
+                updateNotificationColor();
+            } else {
+                return ndk::ScopedAStatus::fromExceptionCode(EX_UNSUPPORTED_OPERATION);
+            }
             break;
         case LightType::ATTENTION:
-            mLastAttentionState = state;
+            if (mDevices.hasNotificationDevices()) {
+                mLastAttentionState = state;
+                updateNotificationColor();
+            } else {
+                return ndk::ScopedAStatus::fromExceptionCode(EX_UNSUPPORTED_OPERATION);
+            }
+            break;
+        case LightType::MICROPHONE:
+            mLastMicrophoneState = state;
+            updateNotificationColor();
+            break;
+        case LightType::CAMERA:
+            mLastCameraState = state;
             updateNotificationColor();
             break;
         default:
@@ -100,10 +134,12 @@ binder_status_t Lights::dump(int fd, const char** /*args*/, uint32_t /*numArgs*/
 void Lights::updateNotificationColor() {
     std::lock_guard<std::mutex> lock(mLedMutex);
 
-    const State state = mLastNotificationsState.isLit() ? mLastNotificationsState
-                        : mLastAttentionState.isLit()   ? mLastAttentionState
-                        : mLastBatteryState.isLit()     ? mLastBatteryState
-                                                        : State();
+    const State state = mLastCameraState.isLit()          ? mLastCameraState
+                        : mLastMicrophoneState.isLit()    ? mLastMicrophoneState
+                        : mLastNotificationsState.isLit() ? mLastNotificationsState
+                        : mLastAttentionState.isLit()     ? mLastAttentionState
+                        : mLastBatteryState.isLit()       ? mLastBatteryState
+                                                          : State();
 
     mDevices.setNotificationState(state);
 
